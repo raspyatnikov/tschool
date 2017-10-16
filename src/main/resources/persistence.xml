@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="logiweb" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.tsystems.tschool.logiweb.entities.Cargo</class>
+        <class>com.tsystems.tschool.logiweb.entities.City</class>
+        <class>com.tsystems.tschool.logiweb.entities.User</class>
+        <class>com.tsystems.tschool.logiweb.entities.Truck</class>
+        <class>com.tsystems.tschool.logiweb.entities.Driver</class>
+        <class>com.tsystems.tschool.logiweb.entities.DeliveryOrder</class>
+        <class>com.tsystems.tschool.logiweb.entities.DriverShiftJournal</class>
+        <class>com.tsystems.tschool.logiweb.entities.OrderWaypoint</class>
+
+        <validation-mode>AUTO</validation-mode>
+        <properties>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/logiweb"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.connection.password" value="ilyar2008"/>
+            <property name="hibernate.archive.autodetection" value="class"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="javax.persistence.validation.mode" value="AUTO" />
+            <property name="hibernate.validator.autoregister_listeners" value="true" />
+            <property name="javax.persistence.validation.group.pre-persist" value="javax.validation.groups.Default"/>
+            <property name="javax.persistence.validation.group.pre-update" value="javax.validation.groups.Default"/>
+        </properties>
+    </persistence-unit>
+</persistence>
