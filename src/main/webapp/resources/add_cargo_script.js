@@ -5,7 +5,12 @@ $(document).on('click', '[name="addCargo"]', function () {
     // if ($('#order-form .cargo-row').length > 2) $('[name="delWaypoint"]').removeClass("disabled");
 });
 
-
+$(document).on('click', '[name="addWaypoint"]', function () {
+    $('#order-form .cities:last').after($('#order-form .cities:last').clone());
+    $('#order-form .cities:last input').val("");
+    $('#routeForm .cities:last select').val("");
+    // if ($('#order-form .cargo-row').length > 2) $('[name="delWaypoint"]').removeClass("disabled");
+});
 
 $(document).on('click', '[name="getTruckList"]', function () {
     var pst = {};

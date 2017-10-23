@@ -8,7 +8,7 @@
     <c:import url="../header.jsp"/>
     <style>
         #map {
-            width: 100%; height: 20%;
+            width: 100%; height: 23%;
         }
 
     </style>
@@ -65,26 +65,29 @@
                                                 <input type="text" name="order_number" placeholder="Order number" >
                                             </label>
                                         </section>
-                                        <div class="row">
 
                                             <div class="cities">
-                                            <section class="col col-4"> <label class="select">
+                                            <section> <label class="select">
                                                 <select name="waypoint_city" id = "start_waypoint">
-                                                    <option value="">Origin city</option>
+                                                    <option value="">Select city</option>
                                                     <c:forEach items="${cityList}" var="city">
                                                         <option  value=${city.name}>${city.name}</option>
                                                     </c:forEach>                        </select></label></section></div>
-                                            <div class="cities"><section class="col col-4"> <label class="select">
+                                            <div class="cities">
+                                                <section class=""> <label class="select">
                                                 <select name="waypoint_city">
-                                                    <option value="">Destination city</option>
+                                                    <option value="">Select city</option>
                                                     <c:forEach items="${cityList}" var="city">
                                                         <option  value=${city.name} >${city.name}</option>
                                                     </c:forEach>                        </select></label></section></div>
+                                        <div class = "row">
+                                        <section class="col col-2">
+                                            <button type="button" name = "addWaypoint" class="btn btn-default btn-block btn-sm bg-color-blueLight">Add waypoint</button>
+                                        </section></div>
 
-                                        </div>
-                                    <section>
+                                        <section>
                                         <label class="label">Route length (km)</label>
-                                        <label class="input">
+                                            <label class="input">
                                             <input type="text" id="route_length" readonly>
                                         </label>
                                     </section>
