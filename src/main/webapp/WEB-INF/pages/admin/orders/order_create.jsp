@@ -56,7 +56,7 @@
 
                                 <form id="order-form" class="smart-form" novalidate="novalidate" name = "form_main">
                                     <header>
-                                        New order
+                                        <b>New order</b>
                                     </header>
 
                                     <fieldset>
@@ -68,13 +68,13 @@
                                         <div class="row">
 
                                             <div class="cities">
-                                            <section class="col col-5"> <label class="select">
-                                                <select name="waypoint_city">
+                                            <section class="col col-4"> <label class="select">
+                                                <select name="waypoint_city" id = "start_waypoint">
                                                     <option value="">Origin city</option>
                                                     <c:forEach items="${cityList}" var="city">
                                                         <option  value=${city.name}>${city.name}</option>
                                                     </c:forEach>                        </select></label></section></div>
-                                            <div class="cities"><section class="col col-5"> <label class="select">
+                                            <div class="cities"><section class="col col-4"> <label class="select">
                                                 <select name="waypoint_city">
                                                     <option value="">Destination city</option>
                                                     <c:forEach items="${cityList}" var="city">
@@ -85,7 +85,7 @@
                                     <section>
                                         <label class="label">Route length (km)</label>
                                         <label class="input">
-                                            <input type="text" id="j" readonly>
+                                            <input type="text" id="route_length" readonly>
                                         </label>
                                     </section>
                                         <section>
@@ -93,9 +93,13 @@
                                         </section>
                                     </fieldset>
                                     <header> Cargoes</header>
-                                    <fieldset><a href="" name="add-cargoe-button" class="editable editable click">Add cargo</a></fieldset>
                                     <fieldset class = "cargoes_list">
-                                        <div class="row"><div class = "cargoes">
+                                        <div class="row">
+                                            <section class="col col-2">
+                                                <button type="button" name = "addCargo" class="btn btn-default btn-block btn-sm bg-color-blueLight">Add cargoe</button>
+                                            </section>
+                                        </div>
+                                        <div class="row cargo-row"><div class = "cargoes">
                                         <section class="col col-3">
                                             <label class="input">
                                                 <input type="text" name="title" placeholder="Cargo title">
@@ -110,14 +114,14 @@
 
 
                                         <section class="col col-3"> <label class="select">
-                                            <select name="order_origin">
+                                            <select name="order_origin" required>
                                                 <option value="">Origin city</option>
                                                 <c:forEach items="${cityList}" var="city">
                                                     <option  value=${city.name}>${city.name}</option>
                                                 </c:forEach>                        </select></label></section>
 
                                         <section class="col col-3"> <label class="select">
-                                            <select name="order_destination">
+                                            <select name="order_destination" required>
                                                 <option value="">Destination city</option>
                                                 <c:forEach items="${cityList}" var="city">
                                                     <option  value=${city.name}>${city.name}</option>
@@ -128,20 +132,31 @@
                                     <header> Truck and drivers</header>
 
                                     <fieldset>
-                                        <section> <label class="select">
+                                        <div class = "row">
+
+                                            <section class="col col-2">
+                                                <button type="button" name="getTruckList" class="btn btn-default btn-block btn-sm bg-color-blueLight">Get truck list</button>
+                                            </section>
+
+                                        <section class="col col-10"> <label class="select">
                                             <select name="truck">
                                                 <option value="">Select truck</option>
                                                                       </select></label></section>
 
-                                        <section> <label class="select">
+                                        </div>
+                                        <div class="row">
+
+                                            <section class="col col-2">
+                                                <button type="button" class="btn btn-default btn-block btn-sm bg-color-blueLight" name="getDriversList">Get drivers list</button>
+                                            </section>
+
+                                        <section  class="col col-10"><label class="select">
                                             <select name="driver">
                                                 <option value="">Driver</option>
-                                                <c:forEach items="${driverList}" var="driver">
-                                                    <option  value=${driver.id} >${driver.name} ${driver.surname}</option>
-                                                </c:forEach>                        </select></label></section>
-                                    </fieldset>
+
+                                            </select></label></section></div></fieldset>
                                     <footer>
-                                        <button type="button" class="btn btn-primary" id = "saveOrder" name = "saveOrder">
+                                        <button type="button" class="btn btn-danger" id = "saveOrder" name = "saveOrder">
                                             Create new order
                                         </button>
                                     </footer>

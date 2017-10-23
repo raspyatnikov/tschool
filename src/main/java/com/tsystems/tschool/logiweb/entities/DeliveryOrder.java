@@ -21,6 +21,11 @@ public class DeliveryOrder {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @ManyToMany
+    @JoinTable(name="drivers_orders", joinColumns=@JoinColumn(name="order_id"),
+            inverseJoinColumns=@JoinColumn(name="driver_id"))
+    private Set<Driver> orderDrivers;
+
     @Column(name = "order_number", nullable = false)
     private int orderNumber;
 
@@ -32,7 +37,8 @@ public class DeliveryOrder {
         this.orderNumber = orderNumber;
     }
 
-    @OneToOne(mappedBy = "assignedDeliveryOrder")
+    @OneToOne
+    @JoinColumn(name = "truck_id")
     private Truck assignedTruck;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "orderForThisCargo")
@@ -85,5 +91,13 @@ public class DeliveryOrder {
             cargo.setOrderForThisCargo(this);
         }
         this.assignedCargoes = assignedCargoes;
+    }
+
+    public Set<Driver> getOrderDrivers() {
+        return orderDrivers;
+    }
+
+    public void setOrderDrivers(Set<Driver> orderDrivers) {
+        this.orderDrivers = orderDrivers;
     }
 }

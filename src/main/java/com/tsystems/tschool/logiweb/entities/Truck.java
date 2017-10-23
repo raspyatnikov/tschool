@@ -30,10 +30,6 @@ public class Truck {
     @JoinColumn(name = "truck_current_location_city_FK")
     private City currentCity;
 
-    @OneToOne
-    @JoinColumn(name = "truck_delivery_order_FK_UQ")
-    private DeliveryOrder assignedDeliveryOrder;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "currentTruck")
     private Set<Driver> drivers;
 
@@ -73,15 +69,6 @@ public class Truck {
     public void setStatus(TruckStatus status) {
         this.status = status;
     }
-
-    public DeliveryOrder getAssignedDeliveryOrder() {
-        return assignedDeliveryOrder;
-    }
-
-    public void setAssignedDeliveryOrder(DeliveryOrder assignedDeliveryOrder) {
-        this.assignedDeliveryOrder = assignedDeliveryOrder;
-    }
-
 
     public City getCurrentCity() {
         return currentCity;

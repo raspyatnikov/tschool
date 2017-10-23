@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
 $("#order-form").validate({
 
     rules: {
@@ -68,5 +68,30 @@ $("#order-form").validate({
     }
 
 })
+
+
+    $("#login-form").validate({
+
+        rules: {
+            email: {
+                required: true,
+                email:true
+            },
+            password: {
+                required: true
+            }
+        },
+
+        // Messages for form validation
+        messages: {
+            email: {
+                required: 'Please enter valid email'
+            },
+            password: {
+                required: 'Please enter password'
+            }
+        }
+
+    })
 
 });

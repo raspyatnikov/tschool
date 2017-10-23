@@ -1,51 +1,77 @@
-$(function() {
-    var max_fields      = 10;
-    var wrapper         = $(".cargoes_list");
-    var add_button      = $('a[name = "add-cargoe-button"]');
+$(document).on('click', '[name="addCargo"]', function () {
+    $('#order-form .cargo-row:last').after($('#order-form .cargo-row:last').clone());
+    $('#order-form .cargo-row:last input').val("");
+    $('#routeForm .waypoint-row:last select').val("");
+    // if ($('#order-form .cargo-row').length > 2) $('[name="delWaypoint"]').removeClass("disabled");
+});
 
-    var x = 1;
-    $(add_button).click(function(e){
-        e.preventDefault();
-        if(x < max_fields){
-            x++;
-            $(wrapper).append('<div class="row"><div class = "cargoes">\n' +
-                '                                        <section class="col col-3">\n' +
-                '                                            <label class="input">\n' +
-                '                                                <input type="text" name="title" placeholder="Cargo title">\n' +
-                '                                            </label>\n' +
-                '                                        </section>\n' +
-                '\n' +
-                '                                            <section class="col col-2">\n' +
-                '                                                <label class="input">\n' +
-                '                                                    <input type="text" name="weight" placeholder="Weight (kg)">\n' +
-                '                                                </label>\n' +
-                '                                            </section>\n' +
-                '\n' +
-                '\n' +
-                '                                        <section class="col col-3"> <label class="select">\n' +
-                '                                            <select name="order_origin">\n' +
-                '                                                <option value="">Origin city</option>\n' +
-                '                                                <c:forEach items="${cityList}" var="city">\n' +
-                '                                                    <option  value=${city.name}>${city.name}</option>\n' +
-                '                                                </c:forEach>                        </select></label></section>\n' +
-                '\n' +
-                '                                        <section class="col col-3"> <label class="select">\n' +
-                '                                            <select name="order_destination">\n' +
-                '                                                <option value="">Destination city</option>\n' +
-                '                                                <c:forEach items="${cityList}" var="city">\n' +
-                '                                                    <option  value=${city.name}>${city.name}</option>\n' +
-                '                                                </c:forEach>                        </select></label></section></div>\n' +
-                '                                        </div>'); //add input box
-        }
-        else
-        {
-            alert('You Reached the limits')
-        }
+
+
+$(document).on('click', '[name="getTruckList"]', function () {
+    var pst = {};
+    pst.waypoints = [];
+    pst.cargoes = [];
+    $('.cities').each(function () {
+        pst.waypoints.push({
+            city_id: $(this).find('[name="waypoint_city"]').val()
+        })
     });
 
-    $(wrapper).on("click",".delete", function(e){
-        e.preventDefault(); $(this).parent('div').remove(); x--;
-    })
+    $('.cargoes').each(function () {
+        pst.cargoes.push({
+            cargo_weight: $(this).find('[name="weight"]').val(),
+            cargo_origin_city:$(this).find('[name="order_origin"]').val(),
+            cargo_destination_city: $(this).find('[name="order_destination"]').val()
+        })
+    });
+    $.ajax({
+        type: "GET",
+        url: "getSuitableTrucks",
+        data: {"json": JSON.stringify(pst)},
+        dataType: 'json',
+        success: function(data){
+            if(data.code === "400"){
+                $('select[name="truck"]')
+                    .empty()
+                    .append('<option selected="selected" value="">' + data.msg + '</option>')
+            }
+            else{
+            $('select[name="truck"]')
+                .empty()
+                .append('<option selected="selected" value="">Select truck</option>')
 
+                $.each(data.result, function(index, value) {
+                    $('select[name="truck"]')
+                        .append($('<option>').text(value).val(value))
+                    ;
+                })
+        }}
 
+    });
+});
+
+$(document).on('click', '[name="getDriversList"]', function () {
+
+    $.ajax({
+        type: "GET",
+        url: "getSuitableDrivers",
+        data: {"route_length": $("#route_length").val(),
+               "city" : $("#start_waypoint").val() },
+        dataType: 'json',
+        success: function(data){
+            $('select[name="driver"]')
+                .empty()
+                .append('<option selected="selected" value="">Select driver</option>');
+            if(data.length !==0){
+                $.each(data, function(index, value) {
+                    $('select[name="driver"]')
+                        .append($('<option>').text(value).val(value))
+                    ;
+                });}else {
+                $('select[name="driver"]')
+                    .empty()
+                    .append('<option selected="selected" value="">No available drivers for this order!</option>')
+            }
+        }
+    });
 });

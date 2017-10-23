@@ -26,6 +26,10 @@ public class Driver {
     @Column(name = "driver_surname", nullable = false)
     private String surname;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id")
+    private DeliveryOrder currentOrder;
+
     @Column(name = "driver_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private DriverStatus status;
@@ -41,6 +45,10 @@ public class Driver {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "driverForThisRecord")
     private Set<DriverShiftJournal> shitsJournalRecords;
 
+    @ManyToMany
+    @JoinTable(name = "drivers_orders", joinColumns = { @JoinColumn(name = "driver_id") },
+            inverseJoinColumns = { @JoinColumn(name = "order_id")} )
+    private Set<DeliveryOrder> orders;
 
     public Driver() {
     }
@@ -101,17 +109,28 @@ public class Driver {
         this.currentTruck = currentTruck;
     }
 
-//    public Set<DriverShiftJournal> getShitsJournalRecords() {
-//        return shitsJournalRecords;
-//    }
-//
-//    public void setShitsJournalRecords(
-//            Set<DriverShiftJournal> shitsJournalRecords) {
-//        this.shitsJournalRecords = shitsJournalRecords;
-//    }
-
     public User getUserAccount() {
         return userAccount;
+    }
+
+    public void setUserAccount(User userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public DeliveryOrder getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(DeliveryOrder currentOrder) {
+        this.currentOrder = currentOrder;
+    }
+
+    public Set<DeliveryOrder> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<DeliveryOrder> orders) {
+        this.orders = orders;
     }
 
     public void setUserbAccount(User logiwebAccount) {

@@ -1,4 +1,4 @@
-jQuery(document).on('click', '[name = "saveOrder"]', function () {
+$(document).on('click', '[name = "saveOrder"]', function () {
     if($("#order-form").valid()){
     var pst = {};
     pst.order_number = jQuery('[name="order_number"]').val();
@@ -6,13 +6,13 @@ jQuery(document).on('click', '[name = "saveOrder"]', function () {
     pst.driver = jQuery('[name="driver"]').val();
     pst.waypoints = [];
     pst.cargoes = [];
-    jQuery('.cities').each(function () {
+    $('.cities').each(function () {
         pst.waypoints.push({
             city_id: jQuery(this).find('[name="waypoint_city"]').val()
         })
     });
 
-    jQuery('.cargoes').each(function () {
+    $('.cargoes').each(function () {
         pst.cargoes.push({
             cargo_weight: jQuery(this).find('[name="weight"]').val(),
             cargo_title: jQuery(this).find('[name="title"]').val(),
@@ -23,9 +23,7 @@ jQuery(document).on('click', '[name = "saveOrder"]', function () {
 
     console.log(pst);
     var json = JSON.stringify(pst);
-    jQuery.post('createOrder', {json: json}, function (data) {
-        jQuery('input[name="order_number"]').val(data);
-
+    $.post('createOrder', {json: json}, function (data) { $("#order-form").after(data);
     }
     )}
 });

@@ -6,6 +6,8 @@ import javax.persistence.*;
 
 
 @Entity
+@NamedQuery(name="User.findUserByEmail" ,
+        query="SELECT user FROM User user WHERE user.mail=:email")
 @Table(name = "users")
 public class User {
 
@@ -76,5 +78,24 @@ public class User {
         this.password = passMd5;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (id != user.id) return false;
+        if (!mail.equals(user.mail)) return false;
+        return role == user.role;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + mail.hashCode();
+        result = 31 * result + role.hashCode();
+        return result;
+    }
 }
 

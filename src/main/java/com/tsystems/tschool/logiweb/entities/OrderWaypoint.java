@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@NamedQuery(name = "OrderWaypoint.findWaypointByOrderAndSeqNumber", query = "SELECT waypoint FROM OrderWaypoint waypoint WHERE waypoint.order=:order AND waypoint.sequenceNumber=:seqNumber")
 @Table(name = "order_waypoint")
 public class OrderWaypoint implements Comparable<OrderWaypoint>{
     @Id

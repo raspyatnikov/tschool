@@ -11,9 +11,9 @@
 
     <context:component-scan base-package="com.tsystems.tschool.logiweb"/>
 
-    <mvc:view-controller path="/admin" view-name="admin_start_page"/>
-    <mvc:view-controller path="/driver" view-name="driver_start_page"/>
+    <mvc:view-controller path="/" view-name="login"/>
 
+    <import resource="spring-security.xml"/>
 
     <bean id="resolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>

@@ -1,69 +1,44 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>List of trucks</title>
-
+    <title>Trucks</title>
+    <c:import url="../header.jsp"/>
 </head>
 <body>
-<table class="table">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Capacity - kg</th>
-        <th>CurrentCity</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach items="${trucklist}" var="truck">
-        <tr>
-            <td>${truck.id}</td>
-            <td>${truck.cargoCapacity}</td>
-            <td>${truck.currentCity.name}</td>
-            <td>
-                <a href="<c:url value='/deleteUser/${truck.id}'/>">Delete</a>
-            </td>
-        </tr>  </c:forEach>
-    </tbody>
-</table>
+<c:import url="../admin_menu.jsp"/>
 
-<h2>Add new truck</h2>
-
-<form:form method="POST" action="/addTruck" modelAttribute="truck">
-    <table>
-        <tr>
-            <td><form:label path="licencePlate">Licence no.</form:label></td>
-            <td><form:input path="licencePlate"/></td>
-        </tr>
-        <tr>
-            <td><form:label path="cargoCapacity">Cargo capacity (kg)</form:label></td>
-            <td><form:input path="cargoCapacity"/></td>
-        </tr>
-
-        <tr>
-            <td><form:label path="currentCity">Location city</form:label></td>
-            <td>
-            <form:select path="currentCity">
-                    <%--<form:option value="NONE" label="Select" />--%>
-            <form:options items="${cityList}" itemValue="id" itemLabel="name"/>
-                </form:select>
-        </td>
-        </tr>
-        <tr>
-            <td><form:label path="status">Location city</form:label></td>
-            <td>
-                <form:select path="status">
-                    <%--<form:option value="NONE" label="Select" />--%>
-                    <form:options items="${statuses}" itemValue="name" itemLabel="name"/>
-                </form:select>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Add truck"/></td>
-        </tr>
-    </table>
-</form:form>
+<div id="main" role="main">
+    <div id="content">
+        <c:import url="../../message.jsp"/>
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <a class="btn btn-success btn pull-left margin-bottom-10" href="${pageContext.request.contextPath}/admin/addTruck">
+                    Add new truck
+                </a></div></div>
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table table-bordered bg-color-white" >
+                        <thead>
+                        <tr>
+                            <th>Licence plate</th>
+                            <th>Capacity(kg)</th>
+                            <th>CurrentCity</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach items="${trucklist}" var="truck">
+                            <tr>
+                                <td><a href ="/admin/editTruck/${truck.id}">${truck.licencePlate}</a></td>
+                                <td>${truck.cargoCapacity}</td>
+                                <td>${truck.currentCity.name}</td>
+                                <td>${truck.status}</td>
+                            </tr>  </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div></article></div></div>
 </body>
 </html>

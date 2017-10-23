@@ -2,8 +2,7 @@ package com.tsystems.tschool.logiweb.entities.Statuses;
 
 public enum DriverStatus {
     FREE("FREE"),
-    DRIVING("DRIVING"),
-    RESTING_IN_ROUTE("RESTING_IN_ROUTE");
+    DRIVING("DRIVING");
 
     public String name;
 

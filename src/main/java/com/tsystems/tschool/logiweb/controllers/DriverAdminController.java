@@ -5,13 +5,14 @@ import com.tsystems.tschool.logiweb.entities.Statuses.DriverStatus;
 import com.tsystems.tschool.logiweb.entities.Statuses.UserRole;
 import com.tsystems.tschool.logiweb.services.CityService;
 import com.tsystems.tschool.logiweb.services.DriverService;
-import com.tsystems.tschool.logiweb.services.TruckService;
 import com.tsystems.tschool.logiweb.services.UserService;
+import com.tsystems.tschool.logiweb.services.exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,39 +21,28 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
-public class DriverController {
+public class DriverAdminController {
 
     private  DriverService driverService;
     private  CityService cityService;
     private UserService userService;
 
     @Autowired
-    public DriverController(DriverService driverService, CityService cityService, UserService userService) {
+    public DriverAdminController(DriverService driverService, CityService cityService, UserService userService) {
         this.driverService = driverService;
         this.cityService = cityService;
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/driver", method = RequestMethod.GET)
-    public String showDriverDashBoard(Model model){
-        Driver driver = driverService.findDriverById(1);
-        Truck truck = driver.getCurrentTruck();
-        model.addAttribute("employeeId", driver.getEmployeeId());
-        model.addAttribute("truckLicencePlate", truck.getLicencePlate());
-        model.addAttribute("commander", driverService.getCoDriver(driver, truck));
-        List<OrderWaypoint> list = new ArrayList<>(truck.getAssignedDeliveryOrder().getOrderWaypoints());
-        Collections.sort(list);
-        model.addAttribute("currentOrder", list);
-        return "driver_start_page";
-    }
 
     @RequestMapping(value = "/allDrivers", method = RequestMethod.GET)
-    public String showDrivers(Model model) {
+    public String showDrivers(Model model, @RequestParam(required = false) String message) throws ServiceException {
         List<Driver> drivers = driverService.findAllDrivers();
         List<City> cities = cityService.findAllCities();
         model.addAttribute("driver", new Driver());
         model.addAttribute("driverList", drivers);
         model.addAttribute("cityList", cities);
+        model.addAttribute("message", message);
         model.addAttribute("statuses", Arrays.asList(DriverStatus.values()));
         return "admin/drivers/drivers_list";
     }
@@ -72,23 +62,25 @@ public class DriverController {
         userService.addUser(user);
         driver.setUserbAccount(user);
         driverService.addDriver(driver);
-        model.addAttribute("success", "Driver successfully added!");}
+        model.addAttribute("success", "Driver successfully added!");
+        return "redirect:/admin/allDrivers";
+        }
         catch (Exception ex){
             model.addAttribute("error", ex.toString());
+            return "admin/drivers/add_driver";
         }
 
-        return "admin/drivers/add_driver";
     }
 
     @RequestMapping(value = "/addDriver", method = RequestMethod.GET)
-    public String addDriverPage(Model model){
+    public String addDriverPage(Model model) throws ServiceException {
         model.addAttribute("cityList", cityService.findAllCities());
         model.addAttribute("driver", new Driver());
         return "admin/drivers/add_driver";
     }
 
     @RequestMapping(value = "editDriver/{id}", method = RequestMethod.GET)
-    public String editDriverInfo(@PathVariable("id") int id, Model model){
+    public String editDriverInfo(@PathVariable("id") int id, Model model) throws ServiceException {
         Driver driver = driverService.findDriverById(id);
         model.addAttribute("cityList", cityService.findAllCities());
         model.addAttribute("driver", driver);
@@ -98,7 +90,7 @@ public class DriverController {
 
     @RequestMapping(value = "/updateDriver/{id}", method = RequestMethod.POST)
     public String updateDriverInfo(@PathVariable("id") int id, @RequestParam int employeeId,
-                                   @RequestParam int currentCity, @RequestParam String name, @RequestParam String surname, ModelMap model) {
+                                   @RequestParam int currentCity, @RequestParam String name, @RequestParam String surname, ModelMap model) throws ServiceException {
 
         Driver driver = driverService.findDriverById(id);
         driver.setCurrentCity(cityService.getCityById(currentCity));
@@ -108,4 +100,17 @@ public class DriverController {
         driverService.editDriver(driver);
         return "redirect:/admin/allDrivers";
     }
+
+    @RequestMapping(value = "/removeDriver/{id}", method = RequestMethod.GET)
+    public String deleteDriver(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            driverService.removeDriver(id);
+            redirectAttributes.addAttribute("message", "Driver successfully removed!");
+            return "redirect:/admin/allDrivers";
+        } catch (ServiceException e) {
+            model.addAttribute("error", e.getMessage());
+            return "removeDriver/" + id;
+        }
+    }
+
 }

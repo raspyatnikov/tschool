@@ -1,15 +1,19 @@
 package com.tsystems.tschool.logiweb.services.impl;
 
-import com.tsystems.tschool.logiweb.dao.OrderDao;
 import com.tsystems.tschool.logiweb.dao.TruckDao;
-import com.tsystems.tschool.logiweb.entities.DeliveryOrder;
+import com.tsystems.tschool.logiweb.dao.exceptions.DaoException;
 import com.tsystems.tschool.logiweb.entities.Statuses.TruckStatus;
 import com.tsystems.tschool.logiweb.entities.Truck;
+import com.tsystems.tschool.logiweb.services.CityService;
 import com.tsystems.tschool.logiweb.services.TruckService;
+import com.tsystems.tschool.logiweb.services.dto.DtoToEntityConverter;
+import com.tsystems.tschool.logiweb.services.dto.TruckDTO;
+import com.tsystems.tschool.logiweb.services.exceptions.ServiceException;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,76 +21,104 @@ import java.util.List;
 public class TruckServiceImpl implements TruckService {
 
     private TruckDao truckDao;
-    private final OrderDao orderDao;
+    private CityService cityService;
+    private DtoToEntityConverter converter = new DtoToEntityConverter();
+    private static final Logger LOGGER = Logger.getLogger(OrderServiceImpl.class);
+
 
     @Autowired
-    public TruckServiceImpl(TruckDao truckDao, OrderDao orderDao) {
+    public TruckServiceImpl(TruckDao truckDao, CityService cityService) {
         this.truckDao = truckDao;
-        this.orderDao = orderDao;
+        this.cityService = cityService;
     }
 
     @Override
     @Transactional
-    public List<Truck> findAllTrucks() {
-        return truckDao.findAll();
-    }
+    public List<Truck> findAllTrucks() throws ServiceException {
 
-    @Transactional
-    @Override
-    public void editTruck(Truck editedTruckModel) {
-
-    }
-
-    @Transactional
-    @Override
-    public int addTruck(Truck newTruckModel) {
-        truckDao.create(newTruckModel);
-        return newTruckModel.getId();
-    }
-
-    @Transactional
-    @Override
-    public void removeTruck(int truckId) {
-
-    }
-
-    @Transactional
-    @Override
-    public List<String> findFreeAndUnbrokenByCargoCapacityAndCity(Float weight){
-        List<String> result = new ArrayList<>();
-        for(Truck truck : this.findAllTrucks())
-            if (truck.getCargoCapacity() >= weight && truck.getStatus().equals(TruckStatus.OK) && truck.getAssignedDeliveryOrder() == null) result.add(truck.getLicencePlate());
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public void assignOrderToTruck(int truckId, int orderId){
-        Truck truck = truckDao.findById(truckId);
-        if(truck == null) {
-//            throw new ServiceValidationException("Truck does not exist.");
+        try {
+            return truckDao.findAll();
+        } catch (DaoException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
         }
+    }
 
-        if(truck.getStatus() != TruckStatus.OK) {
-//            throw new ServiceValidationException("Truck must have OK status.");
-//        } else if (truck.getAssignedDeliveryOrder() != null ) {
-//            throw new ServiceValidationException("Truck must not have assigned orders.");
+    @Transactional
+    @Override
+    public void editTruck(int id, TruckDTO truck) throws ServiceException {
+        try {
+            Truck truckEntity = this.findTruckById(id);
+            converter.copyDtoToEntity(truck, truckEntity, cityService);
+            validateTruck(truckEntity);
+            truckDao.update(truckEntity);
+            LOGGER.info("Truck with id " + truckEntity.getId() + " updated");
+        } catch (DaoException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
         }
+    }
 
-        DeliveryOrder order = orderDao.findById(orderId);
+    @Transactional
+    @Override
+    public int addTruck(TruckDTO truck) throws ServiceException {
+        try {
+            if(truckDao.findByLicencePlate(truck.getLicencePlate()) != null) throw new ServiceException("Truck with Licence plate " + truck.getLicencePlate() + " already exist!");
+            Truck truckEntity = converter.convertDtoToEntity(truck, cityService);
+            validateTruck(truckEntity);
+            truckDao.create(truckEntity);
+            LOGGER.info("Truck with id " + truckEntity.getId() + " created");
+            return truckEntity.getId();
+        } catch (DaoException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
 
-//        if(order == null) {
-//            throw new ServiceValidationException("Order " + orderId + " does not exist.");
-//        } else if (order.getAssignedTruck() != null) {
-//            throw new ServiceValidationException("Order " + orderId + " must not be assigned to another truck.");
-//        } else if (order.getAssignedCargoes() == null
-//                || order.getAssignedCargoes().isEmpty()) {
-//            throw new ServiceValidationException("Order " + orderId
-//                    + " must have cargo.");
-//        }
+    private void validateTruck(Truck truck) throws ServiceException {
+        if(truck == null) throw new ServiceException("Cannot add empty truck model!");
+        if(truck.getCargoCapacity() < 1) throw new ServiceException("Truck`s cargo capacity must be above 0!");
+        if(!truck.getLicencePlate().matches("[A-Z]{2}\\d{5}")) throw new ServiceException("Truck`s licence plate must be like AA00000!");
+        if(truck.getStatus() == null || truck.getCurrentCity() == null) throw new ServiceException("Truck must have status and city!");
+    }
+    @Transactional
+    @Override
+    public void removeTruck(int truckId) throws ServiceException {
+        try {
+            if(!this.findTruckById(truckId).getDrivers().isEmpty()) throw new ServiceException("Truck  has active order and cannot be removed!");
+            truckDao.delete(this.findTruckById(truckId));
+        } catch (DaoException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
 
-        truck.setAssignedDeliveryOrder(order);
-        truckDao.update(truck);
+    @Transactional
+    @Override
+    public List<String> findFreeAndUnbrokenByCargoCapacityAndCity(Float weight) throws ServiceException {
+        try {
+            if(weight < 0) throw new ServiceException("Error in calculating total weight!");
+            List<String> result = new ArrayList<>();
+            for(Truck truck : this.findAllTrucks())
+                if (truck.getCargoCapacity() >= weight && truck.getStatus().equals(TruckStatus.OK) && truck.getDrivers().isEmpty()) result.add(truck.getLicencePlate());
+            return result;
+        } catch (ServiceException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public Truck findTruckById(int id) throws ServiceException {
+
+        try {
+            return truckDao.findById(id);
+        } catch (DaoException e) {
+            LOGGER.warn("Error in service layer");
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
 }

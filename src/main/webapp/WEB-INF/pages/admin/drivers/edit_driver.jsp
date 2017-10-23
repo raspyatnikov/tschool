@@ -17,28 +17,29 @@
             <div class="row">
                 <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="jarviswidget jarviswidget-sortable">
-                        <form id="order-form" class="smart-form" novalidate="novalidate" action="${pageContext.request.contextPath}/admin/updateDriver/${id}" method="POST" onsubmit="">
+                        <form id="order-form" class="smart-form bg-color-white bordered" novalidate="novalidate" action="${pageContext.request.contextPath}/admin/updateDriver/${id}" method="POST" onsubmit="">
                             <header>
-                                New driver
+                                Update driver info
                             </header>
 
                             <fieldset>
                                     <section>
+                                        <label class="label">Name</label>
                                         <label class="input">
                                             <input type="text" name="name" placeholder="Name" value="${driver.name}">
                                         </label>
                                     </section>
-                                    <section>
+                                    <section><label class="label">Surname</label>
                                         <label class="input">
                                             <input type="text" name="surname" placeholder="Surname" value="${driver.surname}">
                                         </label>
                                     </section>
-                                    <section>
+                                    <section><label class="label">Employee ID</label>
                                         <label class="input">
-                                            <input type="text" name="employeeId" placeholder="Employee ID" value="${driver.employeeId}">
+                                            <input type="text" name="employeeId" placeholder="Employee ID" value="${driver.employeeId}" readonly>
                                         </label>
                                     </section>
-                                    <section>
+                                    <section><label class="label">Current city</label>
                                         <label class="select">
                                             <select name="currentCity">
                                                 <c:forEach items="${cityList}" var="city">
@@ -51,6 +52,7 @@
                                 <button type="submit" class="btn btn-primary">
                                    Update driver info
                                 </button>
+                                <a href="/admin/removeDriver/${driver.employeeId}"><button type="button" class="btn btn-primary">Delete driver</button></a>
                             </footer>
                         </form>
                     </div></article></div></section></div></div>

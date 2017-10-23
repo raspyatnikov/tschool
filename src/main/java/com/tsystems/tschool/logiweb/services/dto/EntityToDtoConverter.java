@@ -7,7 +7,6 @@ import com.tsystems.tschool.logiweb.entities.OrderWaypoint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 public class EntityToDtoConverter {
@@ -24,7 +23,7 @@ public class EntityToDtoConverter {
     }
 
     public CargoDto convertEntityToDto(Cargo cargo){
-        return new CargoDto(cargo.getTitle(), cargo.getWeight(), cargo.getStatus(), cargo.getLoadWaypoint().getCity().getName(),
+        return new CargoDto(cargo.getId(), cargo.getTitle(), cargo.getWeight(), cargo.getStatus(), cargo.getLoadWaypoint().getCity().getName(),
                 cargo.getUnloadWaypoint().getCity().getName());
     }
 
@@ -51,7 +50,7 @@ public class EntityToDtoConverter {
         orderDto.setTruckLicencePlate(order.getAssignedTruck().getLicencePlate());
 
         String drivers = "";
-        for(Driver driver : order.getAssignedTruck().getDrivers())
+        for(Driver driver : order.getOrderDrivers())
             drivers+= driver.getName() + " " + driver.getSurname()+ "\n";
         orderDto.setDrivers(drivers);
         if (order.getAssignedCargoes() != null) orderDto.setCargoes(convertCargoesToDto(new ArrayList<>(order.getAssignedCargoes()))) ;
@@ -82,5 +81,9 @@ public class EntityToDtoConverter {
             listOfDto.add(this.convertEntityToDto(driver));
         return listOfDto;
     }
+
+
+
+
 
 }

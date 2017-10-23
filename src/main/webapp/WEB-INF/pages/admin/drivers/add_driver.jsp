@@ -4,7 +4,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Add new driver</title>
     <c:import url="../header.jsp"/>
 
 </head>
@@ -14,15 +14,7 @@
 
 <div id="main" role="main">
     <div id="content">
-         <c:if test="${error != null}">
-        <div class="alert alert-danger fade in">
-            <strong>Error!</strong> ${error}
-        </div></c:if>
-        <c:if test="${success != null}">
-            <div class="alert alert-success fade in">
-                <strong>${success}</strong>
-            </div></c:if>
-        <section id="widget-grid" class="">
+  <c:import url="../../message.jsp"/>
 
 
             <!-- START ROW -->
@@ -36,21 +28,18 @@
                     <div class="jarviswidget jarviswidget-sortable" data-widget-editbutton="false" data-widget-custombutton="false" role="widget">
 
                         <header>
-                            <%--<h2>Review form </h2>--%>
+
 
                             <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
 
-                        <!-- widget div-->
+
                         <div>
 
-                            <!-- widget edit box -->
+
                             <div class="jarviswidget-editbox">
-                                <!-- This area used as dropdown edit box -->
 
                             </div>
-                            <!-- end widget edit box -->
 
-                            <!-- widget content -->
                             <div class="widget-body no-padding">
 
                                 <form id="order-form" class="smart-form" novalidate="novalidate" action="${pageContext.request.contextPath}/admin/addDriver" method="POST">
